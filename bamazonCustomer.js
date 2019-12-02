@@ -66,11 +66,18 @@ function productPurchase() {
             connection.query(query, { item_id: answer.idprompt }, function (err, results) {
                 // console.log(results[0].stock_quanity)
                 if (err) throw err;
+                if (results[0].stock_quanity < answer.quanityprompt){
+                console.log("We don't have that many units available! Please select another quanity or product.")
+                productPurchase();
+                }
+                else {
                 var queryUpdate = 'UPDATE product SET stock_quanity = ' + (results[0].stock_quanity - answer.quanityprompt) + ' WHERE item_id = ' + answer.idprompt;
                 connection.query(queryUpdate, function (err, res) {
-                    if (err) throw err
-                displayProducts();
-
-                    })
-            })
-        })};
+                    if (err) throw err;
+               displayProducts(); 
+                console.log("Thank you for your purchase! Your total is " + (results[0].price * answer.quanityprompt))
+                })}
+                }
+            
+                    )
+            })};

@@ -13,10 +13,9 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
-
     displayProducts();
-    productPurchase();
 });
+
 
 // inquire function ID question then units question which triggers two functions
 
@@ -33,7 +32,9 @@ function displayProducts() {
                 "Price: " + results[i].price + " |",
                 "Quantity: " + results[i].stock_quanity);
         }
+        productPurchase();
     })
+    
 };
 function productPurchase() {
     inquirer
@@ -74,10 +75,27 @@ function productPurchase() {
                 var queryUpdate = 'UPDATE product SET stock_quanity = ' + (results[0].stock_quanity - answer.quanityprompt) + ' WHERE item_id = ' + answer.idprompt;
                 connection.query(queryUpdate, function (err, res) {
                     if (err) throw err;
-               displayProducts(); 
-                console.log("Thank you for your purchase! Your total is " + (results[0].price * answer.quanityprompt))
-                })}
+
+                })
+                console.log("Thank you for your purchase! Your total is $" + (results[0].price * answer.quanityprompt))
+                buyAgain();
+            }
                 }
             
                     )
-            })};
+            })}
+            
+function buyAgain() {
+    inquirer
+    .prompt({
+        name: "confirm",
+        type: "list",
+        message: "Would you like to purchase another product?",
+        choices: ["Yes please!", "No thank you!"]
+    }
+    )
+    .then(function (answer){
+    if (answer.confirm === "Yes please!") {
+        displayProducts();
+    } else {connection.end();}
+})};

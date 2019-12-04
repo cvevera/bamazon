@@ -37,7 +37,7 @@ function displayProducts() {
             name: "managerOptions",
             type: "list",
             message: "Hello manager! What would you like to do?",
-            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product"]
+            choices: ["View Products for Sale", "View Low Inventory", "Add to Inventory", "Add New Product", "Exit"]
 
         })
         .then(function (answer){
@@ -53,6 +53,9 @@ function displayProducts() {
                     break;
                 case "Add New Product":
                     addProduct();
+                    break;
+                case "Exit":
+                    connection.end();
                     break;
         }
     })};
@@ -103,7 +106,7 @@ function displayProducts() {
                 var queryUpdate = 'UPDATE product SET stock_quanity = ' + (parseInt(results[0].stock_quanity) + parseInt(answer.quanityprompt)) + ' WHERE item_id = ' + answer.idprompt;
                 connection.query(queryUpdate, function (err, res) {
                     if (err) throw err;
-                    console.log("Product added!")
+                    console.log("Product units added!")
                     managerMenu();
                 }
                 
@@ -113,4 +116,38 @@ function displayProducts() {
     )
 };
 
-    function addProduct () {};
+    function addProduct () {
+        inquirer
+        .prompt([
+            {
+            name: "product_name",
+            message: "What is the name of the product you would like to add?",
+            type: "input",
+        },
+        {
+            name: "price",
+            message: "Set the unit price.",
+            type: "input",
+        },
+        {
+            name: "stock_quanity",
+            message: "Set the stock quanity.",
+            type: "input",
+        },
+        {
+            name: "department_name",
+            message: "What department does this item fall under?",
+            type: "list",
+            choices: ["Electronics", "Video Games", "Apparel", "Home Goods", "Board Games", "Toys"]
+        },
+        ]
+
+        )
+        .then(function (answers) {
+            var query = "INSERT INTO product SET ?";
+            connection.query(query, answers, function (err, res){
+                if (err) throw err;
+            })
+            managerMenu();
+        })
+    };

@@ -147,7 +147,9 @@ function displayProducts() {
             var query = "INSERT INTO product SET ?";
             connection.query(query, answers, function (err, res){
                 if (err) throw err;
+                console.log("Product added!")
+                managerMenu();
             })
-            managerMenu();
+            
         })
     };
